@@ -7,6 +7,7 @@ a badly formatted file. This line is pretty long! It's way more than 80 characte
 
 This      is a second paragraph with extraneous whitespace.`);
   const [textOutput, setTextOutput] = React.useState('');
+  const maxLineLength = 80;
 
   const handleChange = event => {
     setTextInput(event.target.value);
@@ -18,11 +19,34 @@ This      is a second paragraph with extraneous whitespace.`);
   };
 
   const transformText = input => {
-    let output = input;
-    /*
-    your work goes here!
-    */
+    let paragraphs = input.replace(/\n\s*\n\s*\n/g, '\n\n').split('\n\n');
+    
+    let output = '';
+    for(let paragraphIdx in paragraphs) {
+      output += formatParagraph(paragraphs[paragraphIdx]);
+      // Making sure we don't add an extra line break at the end of the file.
+      if(paragraphIdx < paragraphs.length - 1) {
+        output += '\n\n';
+      } 
+    }
+
     setTextOutput(output);
+  }
+
+  const formatParagraph = input => {
+    let output = '';
+    const words = input.replace(/\s+/g, ' ').split(' ');
+    let charCount = 0;
+    for(let wordIdx in words) {
+      if(charCount + words[wordIdx].length < maxLineLength) {
+        output += words[wordIdx] + ' ' ;
+        charCount += words[wordIdx].length + 1;
+      } else {
+        output += '\n' + words[wordIdx] + ' ';
+        charCount = words[wordIdx].length + 1;
+      }
+    }
+    return output;
   }
   
   return (
